@@ -31,8 +31,11 @@ public:
         if (numerator_ == 0) {
             return std::to_string(0);
         }
-        else if ((numerator_ / denominator_ > 0) && (numerator_ % denominator_  == 0)) {
+        if ((numerator_ / denominator_ > 0) && (numerator_ % denominator_  == 0)) {
             return std::to_string(numerator_ / denominator_);
+        }
+        if ((numerator_ > 0 && denominator_ < 0) || (numerator_ < 0 && denominator_ > 0)) {
+            return "-" + std::to_string(abs(numerator_)) + "/" + std::to_string(abs(denominator_));
         }
         else {
             return std::to_string(numerator_) + "/" + std::to_string(denominator_);
@@ -72,19 +75,17 @@ public:
         return *this;        
     }
     Fraction operator ++() {
-        Fraction temp = *this;
         (*this)++;
-        return temp;
+        return *this;
     }
     Fraction operator --(int) {
-        numerator_ += -1 * denominator_;
+        numerator_ -= 1 * denominator_;
         this->recalc();
         return *this;
     }
     Fraction operator --() {
-        Fraction temp = *this;
         (*this)--;
-        return temp;
+        return *this;
     }
 };
 
@@ -104,15 +105,19 @@ int main()
 
 	Fraction f1(f11, f12);
 	Fraction f2(f21, f22);
+    Fraction ff(0, 0);
 
 	std::cout << f1.toString() << " + " << f2.toString() << " = " << (f1 + f2).toString() << "\n";
     std::cout << f1.toString() << " - " << f2.toString() << " = " << (f1 - f2).toString() << "\n";
     std::cout << f1.toString() << " * " << f2.toString() << " = " << (f1 * f2).toString() << "\n";
     std::cout << f1.toString() << " / " << f2.toString() << " = " << (f1 / f2).toString() << "\n";
     std::cout << f1.toString() << " / " << f2.toString() << " = " << (f1 / f2).toString() << "\n";
-    std::cout << "++" << f1.toString() << " * " << f2.toString() << " = " << (++f1 * f2).toString() << "\n";
-    std::cout << f1.toString() << "--" << " * " << f2.toString() << " = " << (f1-- * f2).toString() << "\n";
-    
+    std::cout << "++" << f1.toString() << " * " << f2.toString() << " = ";
+    ff = ++f1;
+    std::cout << (ff * f2).toString() << "\n" << "Значение дроби 1 = " << ff.toString() << "\n";
+    std::cout << f1.toString() << "--" << " * " << f2.toString() << " = ";
+    ff = f1--;
+    std::cout << (ff * f2).toString() << "\n" << "Значение дроби 1 = " << ff.toString() << "\n";
     
 	return 0;
 }
