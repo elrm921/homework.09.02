@@ -111,7 +111,6 @@ int main()
     std::cout << f1.toString() << " - " << f2.toString() << " = " << (f1 - f2).toString() << "\n";
     std::cout << f1.toString() << " * " << f2.toString() << " = " << (f1 * f2).toString() << "\n";
     std::cout << f1.toString() << " / " << f2.toString() << " = " << (f1 / f2).toString() << "\n";
-    std::cout << f1.toString() << " / " << f2.toString() << " = " << (f1 / f2).toString() << "\n";
     std::cout << "++" << f1.toString() << " * " << f2.toString() << " = ";
     ff = ++f1;
     std::cout << (ff * f2).toString() << "\n" << "Значение дроби 1 = " << ff.toString() << "\n";
