@@ -13,79 +13,73 @@ public:
 		denominator_ = denominator;
 	}
     int gcd(int a, int b) {
-        if (b == 0) {
-            return a;
-        }
-        else {
-            return gcd(b, a % b);
-        }
+        return (b == 0 ? a : gcd(b, a % b));
     }
-    void recalc() {
+    Fraction recalc() {
         int cd = gcd(numerator_, denominator_);
-        int r_num = (numerator_ / cd);
-        int r_den = (denominator_ / cd);
-        numerator_ = r_num;
-        denominator_ = r_den;
+        int temp_num = (numerator_ / cd);
+        int temp_den = (denominator_ / cd);
+        if (numerator_ > 0 && denominator_ < 0) {
+            temp_num *= -1;
+            temp_den *= -1;
+        }
+        Fraction result(temp_num, temp_den);
+        return result;
     }
-    std::string toString() {
-        if (numerator_ == 0) {
-            return std::to_string(0);
-        }
-        if ((numerator_ / denominator_ > 0) && (numerator_ % denominator_  == 0)) {
-            return std::to_string(numerator_ / denominator_);
-        }
-        if ((numerator_ > 0 && denominator_ < 0) || (numerator_ < 0 && denominator_ > 0)) {
-            return "-" + std::to_string(abs(numerator_)) + "/" + std::to_string(abs(denominator_));
+    Fraction reverse() const {
+        int temp_num = denominator_;
+        int temp_den = numerator_;
+        Fraction result(temp_num, temp_den);
+        return result;
+    }
+    Fraction negative() const {
+        int temp_num = numerator_;
+        int temp_den = denominator_;
+        Fraction result(temp_num * -1, temp_den);
+        return result;
+    }
+    friend std::ostream &operator <<(std::ostream &output, const Fraction &fraction) {
+        if (fraction.numerator_ % fraction.denominator_ == 0) {
+            output << std::to_string(fraction.numerator_ / fraction.denominator_);
         }
         else {
-            return std::to_string(numerator_) + "/" + std::to_string(denominator_);
+            output << std::to_string(fraction.numerator_) + "/" + std::to_string(fraction.denominator_);
         }
+        return output;
     }
-    Fraction operator +(Fraction other) {
-        int r_num = (numerator_ * other.denominator_) + (other.numerator_ * denominator_);
-        int r_den = (denominator_ * other.denominator_);
-        Fraction result(r_num, r_den);
-        result.recalc();
-        return result;
+    Fraction operator +(const Fraction &other) {
+        int num = (numerator_ * other.denominator_) + (other.numerator_ * denominator_);
+        int den = (denominator_ * other.denominator_);
+        Fraction result(num, den);
+        return result.recalc();
     }
-    Fraction operator -(Fraction other) {
-        int r_num = (numerator_ * other.denominator_) - (other.numerator_ * denominator_);
-        int r_den = (denominator_ * other.denominator_);
-        Fraction result(r_num, r_den);
-        result.recalc();
-        return result;
+    Fraction operator *(const Fraction &other) {
+        int num = (numerator_ * other.numerator_);
+        int den = (denominator_ * other.denominator_);
+        Fraction result(num, den);
+        return result.recalc();
     }
-    Fraction operator *(Fraction other) {
-        int r_num = (numerator_ * other.numerator_);
-        int r_den = (denominator_ * other.denominator_);
-        Fraction result(r_num, r_den);
-        result.recalc();
-        return result;
+    Fraction operator -(const Fraction &other) {
+        Fraction result = (*this) + other.negative();
+        return result.recalc();
     }
-    Fraction operator /(Fraction other) {
-        int r_num = (numerator_ * other.denominator_);
-        int r_den = (denominator_ * other.numerator_);
-        Fraction result(r_num, r_den);
-        result.recalc();
-        return result;
-    }
-    Fraction operator ++(int) {
-        numerator_ += 1 * denominator_;
-        this->recalc();
-        return *this;        
+    Fraction operator /(const Fraction &other) {
+        Fraction result = (*this) * other.reverse();
+        return result.recalc();
     }
     Fraction operator ++() {
-        (*this)++;
-        return *this;
-    }
-    Fraction operator --(int) {
-        numerator_ -= 1 * denominator_;
-        this->recalc();
-        return *this;
+        Fraction result = (*this) + Fraction(1,1);
+        return result.recalc();
     }
     Fraction operator --() {
-        (*this)--;
-        return *this;
+        Fraction result = (*this) + Fraction(-1,1);
+        return result.recalc();
+    }
+    Fraction operator ++(int) {
+        return ++(*this);        
+    }
+    Fraction operator --(int) {
+        return --(*this);
     }
 };
 
@@ -105,18 +99,18 @@ int main()
 
 	Fraction f1(f11, f12);
 	Fraction f2(f21, f22);
-    Fraction ff(0, 0);
+    Fraction f3(1, 1);
 
-	std::cout << f1.toString() << " + " << f2.toString() << " = " << (f1 + f2).toString() << "\n";
-    std::cout << f1.toString() << " - " << f2.toString() << " = " << (f1 - f2).toString() << "\n";
-    std::cout << f1.toString() << " * " << f2.toString() << " = " << (f1 * f2).toString() << "\n";
-    std::cout << f1.toString() << " / " << f2.toString() << " = " << (f1 / f2).toString() << "\n";
-    std::cout << "++" << f1.toString() << " * " << f2.toString() << " = ";
-    ff = ++f1;
-    std::cout << (ff * f2).toString() << "\n" << "Значение дроби 1 = " << ff.toString() << "\n";
-    std::cout << f1.toString() << "--" << " * " << f2.toString() << " = ";
-    ff = f1--;
-    std::cout << (ff * f2).toString() << "\n" << "Значение дроби 1 = " << ff.toString() << "\n";
+	std::cout << f1 << " + " << f2 << " = " << (f1 + f2) << "\n";
+    std::cout << f1 << " - " << f2 << " = " << (f1 - f2) << "\n";
+    std::cout << f1 << " * " << f2 << " = " << (f1 * f2) << "\n";
+    std::cout << f1 << " / " << f2 << " = " << (f1 / f2) << "\n";
+    std::cout << "++" << f1 << " * " << f2 << " = ";
+    f3 = ++f1;
+    std::cout << (f3 * f2) << "\n" << "Значение дроби 1 = " << f3 << "\n";
+    std::cout << f1 << "--" << " * " << f2 << " = ";
+    f3 = f1--;
+    std::cout << (f3 * f2) << "\n" << "Значение дроби 1 = " << f3 << "\n";
     
 	return 0;
 }
