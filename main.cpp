@@ -26,18 +26,6 @@ public:
         Fraction result(temp_num, temp_den);
         return result;
     }
-    Fraction reverse() const {
-        int temp_num = denominator_;
-        int temp_den = numerator_;
-        Fraction result(temp_num, temp_den);
-        return result;
-    }
-    Fraction negative() const {
-        int temp_num = numerator_;
-        int temp_den = denominator_;
-        Fraction result(temp_num * -1, temp_den);
-        return result;
-    }
     friend std::ostream &operator <<(std::ostream &output, const Fraction &fraction) {
         if (fraction.numerator_ % fraction.denominator_ == 0) {
             output << std::to_string(fraction.numerator_ / fraction.denominator_);
@@ -59,21 +47,26 @@ public:
         Fraction result(num, den);
         return result.recalc();
     }
+    Fraction operator-() {
+        Fraction result(-numerator_,denominator_);
+        return result;
+    }
     Fraction operator -(const Fraction &other) {
-        Fraction result = (*this) + other.negative();
-        return result.recalc();
+        // Or use unary minus here
+        Fraction result = (*this) + Fraction(-other.numerator_,other.denominator_);
+        return result;
     }
     Fraction operator /(const Fraction &other) {
-        Fraction result = (*this) * other.reverse();
-        return result.recalc();
+        Fraction result = (*this) * Fraction(other.denominator_,other.numerator_);
+        return result;
     }
     Fraction operator ++() {
         Fraction result = (*this) + Fraction(1,1);
-        return result.recalc();
+        return result;
     }
     Fraction operator --() {
         Fraction result = (*this) + Fraction(-1,1);
-        return result.recalc();
+        return result;
     }
     Fraction operator ++(int) {
         return ++(*this);        
