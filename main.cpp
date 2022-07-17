@@ -1,4 +1,5 @@
 #include <iostream>
+#include <numeric>
 
 class Fraction
 {
@@ -9,23 +10,12 @@ private:
 public:
 	Fraction(int numerator, int denominator)
 	{
-		numerator_ = numerator;
-		denominator_ = denominator;
+        int gcd = std::gcd(numerator, denominator);
+        int recalc_num = (numerator / gcd);
+        int recalc_den = (denominator / gcd);
+		numerator_ = recalc_num;
+		denominator_ = recalc_den;
 	}
-    int gcd(int a, int b) {
-        return (b == 0 ? a : gcd(b, a % b));
-    }
-    Fraction recalc() {
-        int cd = gcd(numerator_, denominator_);
-        int temp_num = (numerator_ / cd);
-        int temp_den = (denominator_ / cd);
-        if (numerator_ > 0 && denominator_ < 0) {
-            temp_num *= -1;
-            temp_den *= -1;
-        }
-        Fraction result(temp_num, temp_den);
-        return result;
-    }
     friend std::ostream &operator <<(std::ostream &output, const Fraction &fraction) {
         if (fraction.numerator_ % fraction.denominator_ == 0) {
             output << std::to_string(fraction.numerator_ / fraction.denominator_);
@@ -35,44 +25,47 @@ public:
         }
         return output;
     }
-    Fraction operator +(const Fraction &other) {
+    Fraction operator +(const Fraction &other) const {
         int num = (numerator_ * other.denominator_) + (other.numerator_ * denominator_);
         int den = (denominator_ * other.denominator_);
         Fraction result(num, den);
-        return result.recalc();
+        return result;
     }
-    Fraction operator *(const Fraction &other) {
+    Fraction operator *(const Fraction &other) const {
         int num = (numerator_ * other.numerator_);
         int den = (denominator_ * other.denominator_);
         Fraction result(num, den);
-        return result.recalc();
-    }
-    Fraction operator-() {
-        Fraction result(-numerator_,denominator_);
         return result;
     }
-    Fraction operator -(const Fraction &other) {
-        // Or use unary minus here
-        Fraction result = (*this) + Fraction(-other.numerator_,other.denominator_);
+    Fraction operator-() const {
+        Fraction result = (*this) * Fraction(-1,1);
         return result;
     }
-    Fraction operator /(const Fraction &other) {
+    Fraction operator -(const Fraction &other) const {
+        Fraction result = (*this) + (-other);
+        return result;
+    }
+    Fraction operator /(const Fraction &other) const {
         Fraction result = (*this) * Fraction(other.denominator_,other.numerator_);
         return result;
     }
     Fraction operator ++() {
-        Fraction result = (*this) + Fraction(1,1);
-        return result;
+        (*this) = (*this) + Fraction(1,1);
+        return *this;
     }
     Fraction operator --() {
-        Fraction result = (*this) + Fraction(-1,1);
-        return result;
+        (*this) = (*this) + Fraction(-1,1);
+        return *this;
     }
     Fraction operator ++(int) {
-        return ++(*this);        
+        Fraction temp = *this;
+        (*this) = (*this) + Fraction(1,1);
+        return temp;        
     }
     Fraction operator --(int) {
-        return --(*this);
+        Fraction temp = *this;
+        (*this) = (*this) + Fraction(-1,1);
+        return temp;      
     }
 };
 
@@ -100,10 +93,10 @@ int main()
     std::cout << f1 << " / " << f2 << " = " << (f1 / f2) << "\n";
     std::cout << "++" << f1 << " * " << f2 << " = ";
     f3 = ++f1;
-    std::cout << (f3 * f2) << "\n" << "Значение дроби 1 = " << f3 << "\n";
+    std::cout << (f1 * f2) << "\n" << "Значение дроби 1 = " << f3 << "\n";
     std::cout << f1 << "--" << " * " << f2 << " = ";
     f3 = f1--;
-    std::cout << (f3 * f2) << "\n" << "Значение дроби 1 = " << f3 << "\n";
+    std::cout << (f1 * f2) << "\n" << "Значение дроби 1 = " << f3 << "\n";
     
 	return 0;
 }
